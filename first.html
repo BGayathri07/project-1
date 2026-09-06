@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome Back — Login</title>
+<style>
+:root {
+  --lilac-bg-1: #cdbdec;
+  --lilac-bg-2: #ab93d9;
+  --violet-500: #8d74c9;
+  --violet-600: #7a5fc0;
+  --violet-700: #6a4fb0;
+  --cream: #f6f2ec;
+  --cream-dark: #efe9e0;
+  --ink: #4b4358;
+  --ink-soft: #8b81a0;
+  --pink: #f2a0c4;
+  --shadow-clay: 0 18px 30px -10px rgba(74, 48, 110, 0.35), 0 2px 0 rgba(255,255,255,0.4) inset;
+  --shadow-clay-sm: 0 8px 16px -6px rgba(74, 48, 110, 0.28);
+  --radius-card: 40px;
+  --radius-field: 22px;
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Baloo 2', 'Quicksand', 'Segoe UI', system-ui, sans-serif;
+  color: var(--ink);
+}
+
+.scene {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.25), transparent 40%),
+    linear-gradient(160deg, var(--lilac-bg-1) 0%, var(--lilac-bg-2) 100%);
+}
+
+.cloud {
+  position: absolute;
+  width: 140px;
+  height: 60px;
+  background: #fff;
+  border-radius: 100px;
+  box-shadow: var(--shadow-clay-sm);
+  opacity: 0.9;
+}
+.cloud::before, .cloud::after {
+  content: "";
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+}
+.cloud::before { width: 60px; height: 60px; top: -28px; left: 15px; }
+.cloud::after  { width: 50px; height: 50px; top: -22px; right: 20px; }
+.cloud--left  { top: 12%; left: 4%; transform: scale(0.8); }
+.cloud--right { top: 32%; right: 4%; transform: scale(0.65); }
+
+.card {
+  position: relative;
+  width: min(94vw, 380px);
+  background: var(--cream);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-clay);
+  padding: 40px 30px 34px;
+  z-index: 2;
+}
+
+.card__top {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.heart {
+  color: var(--pink);
+  font-size: 26px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,0.12));
+}
+
+.title {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--violet-700);
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+/* Simple friendly avatar (replaces the old doll) */
+.avatar {
+  width: 84px;
+  height: 84px;
+  margin: 20px auto 0;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--violet-500), var(--violet-600));
+  box-shadow: var(--shadow-clay-sm), inset 0 -3px 0 rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--cream-dark);
+  border-radius: var(--radius-field);
+  box-shadow: inset 0 2px 6px rgba(90, 70, 130, 0.12), inset 0 -1px 0 rgba(255,255,255,0.6);
+  padding: 4px 16px 4px 4px;
+}
+
+.field__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--violet-500), var(--violet-600));
+  color: #fff;
+  margin-right: 12px;
+  box-shadow: var(--shadow-clay-sm);
+}
+.field__icon svg { width: 18px; height: 18px; }
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.98rem;
+  font-family: inherit;
+  color: var(--ink);
+  padding: 14px 4px;
+  outline: none;
+}
+.field input::placeholder { color: var(--ink-soft); }
+
+.field__toggle {
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.field__toggle svg { width: 20px; height: 20px; }
+.field__toggle:hover { background: rgba(140, 116, 201, 0.12); color: var(--violet-600); }
+.field__toggle:focus-visible,
+.field input:focus-visible,
+.btn-login:focus-visible,
+.social-btn:focus-visible,
+.link-forgot:focus-visible,
+.signup-row a:focus-visible {
+  outline: 2px solid var(--violet-600);
+  outline-offset: 2px;
+}
+
+.row-end { display: flex; justify-content: flex-end; margin-top: -6px; }
+.link-forgot {
+  font-size: 0.85rem;
+  color: var(--violet-600);
+  text-decoration: none;
+  font-weight: 600;
+}
+.link-forgot:hover { text-decoration: underline; }
+
+.btn-login {
+  border: none;
+  cursor: pointer;
+  padding: 16px;
+  border-radius: 28px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: inherit;
+  background: linear-gradient(160deg, var(--violet-500), var(--violet-700));
+  box-shadow: 0 10px 20px -6px rgba(106, 79, 176, 0.55), inset 0 2px 0 rgba(255,255,255,0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.btn-login:hover { transform: translateY(-2px); }
+.btn-login:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 4px 10px -4px rgba(106, 79, 176, 0.55), inset 0 2px 0 rgba(255,255,255,0.25);
+}
+.btn-login[disabled] { opacity: 0.75; cursor: progress; }
+
+.error-msg {
+  margin: -6px 0 0;
+  font-size: 0.82rem;
+  color: #c0456b;
+  text-align: center;
+  min-height: 1em;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  margin-top: 4px;
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(139, 129, 160, 0.3);
+}
+
+.social-row {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+.social-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--cream-dark);
+  box-shadow: var(--shadow-clay-sm), inset 0 -2px 0 rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.social-btn:hover { transform: translateY(-3px); }
+.social-btn:active { transform: translateY(0); }
+
+.signup-row {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: 6px 0 0;
+}
+.signup-row a {
+  color: var(--violet-600);
+  font-weight: 700;
+  text-decoration: none;
+}
+.signup-row a:hover { text-decoration: underline; }
+
+@media (max-width: 420px) {
+  .card { padding: 34px 22px 28px; }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+.shake { animation: shake 0.5s; }
+</style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="cloud cloud--left" aria-hidden="true"></div>
+    <div class="cloud cloud--right" aria-hidden="true"></div>
+
+    <main class="card">
+
+      <div class="card__top">
+        <div class="heart" aria-hidden="true">♥</div>
+        <h1 class="title">Welcome Back</h1>
+        <p class="subtitle">Login to continue your journey</p>
+        <div class="avatar" aria-hidden="true">🙂</div>
+      </div>
+
+      <form class="panel" id="loginForm" novalidate>
+
+        <label class="field">
+          <span class="field__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 19.2c1.4-3.4 4.3-5.2 7.5-5.2s6.1 1.8 7.5 5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <input type="text" id="username" name="username" placeholder="Email or Username" autocomplete="username" required>
+        </label>
+
+        <label class="field">
+          <span class="field__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="5.5" y="10.5" width="13" height="9" rx="2.2" stroke="currentColor" stroke-width="1.8"/><path d="M8.3 10.5V7.8a3.7 3.7 0 0 1 7.4 0v2.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
+          <button type="button" class="field__toggle" id="togglePassword" aria-label="Show password" aria-pressed="false">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.7" stroke="currentColor" stroke-width="1.7"/></svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" hidden><path d="M3.5 3.5l17 17M10.6 10.7a2.7 2.7 0 0 0 3.8 3.8M7.4 7.5C5 8.9 3.3 11 2.5 12c0 0 3.5 6.5 9.5 6.5 1.8 0 3.3-.6 4.6-1.4M15.6 6.4A10.6 10.6 0 0 1 21.5 12s-.9 1.7-2.6 3.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </label>
+
+        <div class="row-end">
+          <a href="#" class="link-forgot" id="forgotPassword">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">
+          <span class="btn-login__label">Login</span>
+        </button>
+
+        <p class="error-msg" id="errorMsg" role="alert" aria-live="polite"></p>
+
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+
+        <div class="social-row">
+          <button type="button" class="social-btn" data-provider="Google" aria-label="Continue with Google">
+            <svg viewBox="0 0 48 48" width="22" height="22"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.8-5.4l-6.4-5.2C29.3 35.4 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.4 5.2C39.9 36.9 44 31 44 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
+          </button>
+          <button type="button" class="social-btn" data-provider="Apple" aria-label="Continue with Apple">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#111" d="M16.4 1c.1 1.2-.4 2.4-1.1 3.3-.7.9-1.9 1.6-3 1.5-.1-1.2.4-2.4 1.1-3.2.8-.9 2-1.5 3-1.6zM20 16.9c-.5 1.2-.8 1.8-1.5 2.8-1 1.5-2.3 3.3-4 3.3-1.5 0-1.9-1-3.9-1s-2.5 1-4 1c-1.7 0-2.9-1.6-4-3.1C1 17.4 0 13.1 1.5 10.2c.8-1.5 2.3-2.5 3.9-2.5 1.5 0 2.5 1 3.8 1 1.3 0 2-1 3.8-1 1.4 0 2.9.8 3.9 2.1-3.4 1.9-2.9 6.8.1 7.1z"/></svg>
+          </button>
+          <button type="button" class="social-btn" data-provider="Facebook" aria-label="Continue with Facebook">
+            <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#fff" d="M15.1 12.6h-2v7.3h-3v-7.3H8.5v-2.6h1.6V8.4c0-1.6.8-3.1 3.2-3.1h2v2.5h-1.4c-.3 0-.7.2-.7.9v1.3h2.2l-.3 2.6z"/></svg>
+          </button>
+        </div>
+
+        <p class="signup-row">Don't have an account? <a href="#" id="signUpLink">Sign Up</a></p>
+
+      </form>
+    </main>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const form         = document.getElementById('loginForm');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const toggleBtn     = document.getElementById('togglePassword');
+  const eyeIcon        = toggleBtn.querySelector('.icon-eye');
+  const eyeOffIcon     = toggleBtn.querySelector('.icon-eye-off');
+  const loginBtn      = document.getElementById('loginBtn');
+  const loginLabel    = loginBtn.querySelector('.btn-login__label');
+  const errorMsg      = document.getElementById('errorMsg');
+  const forgotLink    = document.getElementById('forgotPassword');
+  const signUpLink    = document.getElementById('signUpLink');
+  const card          = document.querySelector('.card');
+
+  toggleBtn.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    eyeIcon.hidden = isPassword;
+    eyeOffIcon.hidden = !isPassword;
+    toggleBtn.setAttribute('aria-pressed', String(isPassword));
+    toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+  });
+
+  function showError(message) {
+    errorMsg.textContent = message;
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+  }
+
+  function clearError() {
+    errorMsg.textContent = '';
+  }
+
+  [usernameInput, passwordInput].forEach((input) => {
+    input.addEventListener('input', clearError);
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearError();
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username) {
+      showError('Please enter your email or username.');
+      usernameInput.focus();
+      return;
+    }
+    if (!password) {
+      showError('Please enter your password.');
+      passwordInput.focus();
+      return;
+    }
+    if (password.length < 6) {
+      showError('Password must be at least 6 characters.');
+      passwordInput.focus();
+      return;
+    }
+
+    loginBtn.disabled = true;
+    loginLabel.textContent = 'Logging in…';
+
+    setTimeout(() => {
+      loginLabel.textContent = 'Login';
+      loginBtn.disabled = false;
+      alert(`Welcome back, ${username}!`);
+      form.reset();
+    }, 1100);
+  });
+
+  document.querySelectorAll('.social-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const provider = btn.dataset.provider;
+      alert(`Continue with ${provider} — hook this up to your OAuth flow.`);
+    });
+  });
+
+  forgotLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Hook this up to your "forgot password" flow.');
+  });
+
+  signUpLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Hook this up to your sign-up page.');
+  });
+
+});
+</script>
+</body>
+</html>
